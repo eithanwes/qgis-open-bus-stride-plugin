@@ -1,27 +1,28 @@
-from qgis.PyQt.QtWidgets import QAction, QMessageBox
 from qgis.core import QgsApplication
-from ..processing_provider.provider import Provider
+from qgis.PyQt.QtWidgets import QAction, QMessageBox
+
+from ..processing_provider.provider import StridePluginProcessingProvider
 
 
-class open_bus_stride_plugin:
+class OpenBusStridePlugin:
     def __init__(self, iface):
         self.iface = iface
         self.provider = None
 
     def initGui(self):
         self.initProcessing()
-        self.action = QAction('Go!', self.iface.mainWindow())
+        self.action = QAction("Go!", self.iface.mainWindow())
         self.action.triggered.connect(self.run)
         self.iface.addToolBarIcon(self.action)
 
     def initProcessing(self):
-        self.provider = Provider()
+        self.provider = StridePluginProcessingProvider()
         QgsApplication.processingRegistry().addProvider(self.provider)
-        
+
     def unload(self):
         QgsApplication.processingRegistry().removeProvider(self.provider)
         self.iface.removeToolBarIcon(self.action)
         del self.action
 
     def run(self):
-        QMessageBox.information(None, 'Minimal plugin', 'Do something useful here')
+        QMessageBox.information(None, "Minimal plugin", "Do something useful here")

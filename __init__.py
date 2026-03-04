@@ -9,8 +9,9 @@
 # (at your option) any later version.
 #---------------------------------------------------------------------
 
-from .core.open_bus_stride_plugin import open_bus_stride_plugin
+from .core.open_bus_stride_plugin import OpenBusStridePlugin
+
 
 def classFactory(iface):
-    return open_bus_stride_plugin(iface)
+    return OpenBusStridePlugin(iface)
 
