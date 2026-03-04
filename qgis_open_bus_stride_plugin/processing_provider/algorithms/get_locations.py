@@ -5,6 +5,7 @@ This module provides a QGIS processing algorithm for fetching vehicle location
 data from the Open Bus Stride API using time-based queries.
 """
 
+import processing
 from qgis.core import (
     NULL,
     QgsCoordinateReferenceSystem,
@@ -17,6 +18,7 @@ from qgis.core import (
     QgsPointXY,
     QgsProcessingAlgorithm,
     QgsProcessingException,
+    QgsProcessingParameterBoolean,
     QgsProcessingParameterDateTime,
     QgsProcessingParameterExtent,
     QgsProcessingParameterFeatureSink,
@@ -41,6 +43,7 @@ class GetLocations(QgsProcessingAlgorithm):
     INPUT_EXTENT = "INPUT_EXTENT"
     INPUT_START_TIME = "INPUT_START_TIME"
     INPUT_DURATION = "INPUT_DURATION"
+    ENRICH_WITH_ROUTES = "ENRICH_WITH_ROUTES"
     OUTPUT = "OUTPUT"
 
     # Field mapping from API response to output layer
@@ -118,6 +121,7 @@ class GetLocations(QgsProcessingAlgorithm):
             - Start Time: Beginning of the time window (UTC)
             - Duration: Length of time window in minutes
             - Additional Parameters: Optional query parameters as Python dictionary
+            - Enrich with Routes: Optionally fetch and join GTFS route data
             """
         )
 
@@ -164,6 +168,14 @@ class GetLocations(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
+            QgsProcessingParameterBoolean(
+                self.ENRICH_WITH_ROUTES,
+                self.tr("Enrich with GTFS Route Data"),
+                defaultValue=True,
+            )
+        )
+
+        self.addParameter(
             QgsProcessingParameterFeatureSink(
                 self.OUTPUT, self.tr("Output SIRI Locations")
             )
@@ -180,6 +192,9 @@ class GetLocations(QgsProcessingAlgorithm):
             parameters, self.INPUT_START_TIME, context
         )
         duration_minutes = self.parameterAsInt(parameters, self.INPUT_DURATION, context)
+        enrich_with_routes = self.parameterAsBool(
+            parameters, self.ENRICH_WITH_ROUTES, context
+        )
 
         # Parse additional parameters
         params = self._parse_parameters(params_str)
@@ -212,7 +227,33 @@ class GetLocations(QgsProcessingAlgorithm):
         self._process_features(data, sink, context, feedback)
 
         feedback.setProgress(100)
-        return {self.OUTPUT: sink[1]}
+
+        output_id = sink[1]
+
+        # Phase 3: Optionally enrich with routes
+        if enrich_with_routes:
+            feedback.pushInfo(self.tr("Phase 3/3: Enriching with GTFS routes..."))
+
+            enrich_params = {
+                "INPUT_LAYER": output_id,
+                "LINE_REF_FIELD": "siri_line_ref",
+                "OUTPUT": parameters[self.OUTPUT],
+            }
+            enrich_result = processing.run(
+                "openbusstride:enrichwithroutes",
+                enrich_params,
+                context=context,
+                feedback=feedback,
+                is_child_algorithm=True,
+            )
+            if enrich_result:
+                return {self.OUTPUT: enrich_result["OUTPUT"]}
+            else:
+                feedback.reportError(
+                    self.tr("Error during enrichment, returning non-enriched data")
+                )
+
+        return {self.OUTPUT: output_id}
 
     def _parse_parameters(self, params_str):
         """
