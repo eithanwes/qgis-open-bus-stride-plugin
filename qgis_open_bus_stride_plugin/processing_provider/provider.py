@@ -5,7 +5,8 @@ from qgis.PyQt.QtGui import QIcon
 
 from .algorithms.enrich_with_routes import EnrichWithRoutes
 from .algorithms.get_locations import GetLocations
-from .algorithms.route_speed_from_locations import RouteSpeedFromLocations
+
+# from .algorithms.route_speed_from_locations import RouteSpeedFromLocations
 
 
 class StridePluginProcessingProvider(QgsProcessingProvider):
@@ -15,7 +16,7 @@ class StridePluginProcessingProvider(QgsProcessingProvider):
         """Load each algorithm into the current provider."""
         self.addAlgorithm(GetLocations())
         self.addAlgorithm(EnrichWithRoutes())
-        self.addAlgorithm(RouteSpeedFromLocations())
+        # self.addAlgorithm(RouteSpeedFromLocations())
 
     def id(self) -> str:
         """The ID of your plugin, used for identifying the provider.
