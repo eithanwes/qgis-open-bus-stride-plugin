@@ -1,10 +1,12 @@
 [general]
-name=Minimal
-description=Minimal plugin
-about=About this minimal plugin
-version=1.0
+name=open_bus_stride_plugin
+description=A plugin that provides access to Open Bus Stride data
+about=This QGIS plugin allows users to access and visualize data from the Open Bus Stride platform and analyze public transportation llocation data.
+version=0.1.0
 qgisMinimumVersion=3.0
-author=Martin Dobias
-email=wonder.sk@gmail.com
-repository=URL to the code repository
+author=Eithan Weiss Schonberg
+email=
+repository=https://github.com/eithan11/qgis-open-bus-stride-plugin
 supportsQt6=True
+icon=icon.svg
+experimental=True
