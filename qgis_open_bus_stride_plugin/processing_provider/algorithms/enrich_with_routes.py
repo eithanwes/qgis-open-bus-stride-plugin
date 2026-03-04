@@ -119,7 +119,7 @@ class EnrichWithRoutes(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr("Enriched Output"))
+            QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr("Enriched SIRI Locations"))
         )
 
     def processAlgorithm(self, parameters, context, feedback):
