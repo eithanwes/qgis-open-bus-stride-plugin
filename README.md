@@ -1,6 +1,6 @@
 # QGIS Open Bus Stride Plugin
 
-A powerful QGIS plugin that integrates with the [Open Bus Stride API](https://open-bus-map-search.hasadna.org.il/) to fetch, enrich, and analyze public transportation vehicle location data directly within QGIS.
+A QGIS plugin that integrates with the [Open Bus Stride API](https://open-bus-map-search.hasadna.org.il/) to fetch, enrich, and analyze public transportation vehicle location data directly within QGIS.
 
 ## About Open Bus Stride
 
